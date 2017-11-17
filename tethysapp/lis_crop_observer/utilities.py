@@ -255,17 +255,16 @@ def get_crops(directory):
 
     crops = []
 
-    # Open each file and convert contents to python objects
-    for crop_json in os.listdir(crops_dir):
-        # Make sure we are only looking at json files
-        if '.json' not in crop_json:
-            continue
-
-        crop_json_path = os.path.join(crops_dir, crop_json)
-        with open(crop_json_path, 'r') as f:
-            crops.append((str(os.path.splitext(crop_json)[0]),str(os.path.splitext(crop_json)[0])))
-
+    for crop in os.listdir(crops_dir):
+        crops.append((str(crop),str(crop)))
 
     return crops
 
 
+#def find_shp(directory, crop):
+    #crops_dir = os.path.join(directory, 'app_workspace/crops/')
+    #for file in crops_dir:
+        #file_name =
+
+
+    #return shapefile

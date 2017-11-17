@@ -41,6 +41,7 @@ def home(request):
     crop_select = SelectInput(display_text='Select a Crop or Upload a New Crop Shapefile',
                                   name='crop-select',
                                   options=crop_list,
+                                  #attributes={"onchange":"find_shp(SHAPEFILES, crop-select)"}
                               )
 
     date_select = SelectInput(display_text='Select a Date',

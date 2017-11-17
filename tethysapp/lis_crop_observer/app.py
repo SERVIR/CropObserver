@@ -36,6 +36,10 @@ class LisCropObserver(TethysAppBase):
                    url='lis-crop-observer/upload-shp',
                    controller='lis_crop_observer.ajax_controllers.upload_shp'
             ),
+            UrlMap(name='use-existing-shapefile',
+                   url='lis-crop-observer/use-existing-shapefile',
+                   controller='lis_crop_observer.ajax_controllers.use_existing_shapefile'
+                   ),
         )
 
         return url_maps

@@ -21,6 +21,7 @@ var LIBRARY_OBJECT = (function() {
         cbar,
         current_layer,
         $btnUpload,
+        $btnshape,
         element,
         $get_ts,
         layers,
@@ -52,6 +53,7 @@ var LIBRARY_OBJECT = (function() {
         gen_color_bar,
         prepare_files,
         upload_file,
+        use_existing_crop,
         update_color_bar,
         update_wms;
     /************************************************************************
@@ -67,6 +69,7 @@ var LIBRARY_OBJECT = (function() {
         $get_ts = $("#get-ts");
         $modalUpload = $("#modalUpload");
         $btnUpload = $("#btn-add-shp");
+        $btnshape = $("#btn-ex-shp");
         animationDelay  = 1000;
         sliderInterval = {};
     };
@@ -413,7 +416,6 @@ var LIBRARY_OBJECT = (function() {
 
     upload_file = function(){
         var files = $("#shp-upload-input")[0].files;
-        var crop_name = $("#crop_name").value;
         var data;
 
         $modalUpload.modal('hide');
@@ -429,7 +431,9 @@ var LIBRARY_OBJECT = (function() {
             error: function (status) {
 
             }, success: function (response) {
+                alert(response)
                 var extents = response.bounds;
+                alert(extents)
                 shpSource = new ol.source.Vector({
                     features: (new ol.format.GeoJSON()).readFeatures(response.geo_json)
                 });
@@ -467,6 +471,62 @@ var LIBRARY_OBJECT = (function() {
     };
 
     $("#btn-add-shp").on('click',upload_file);
+
+    use_existing_crop = function(){
+        var crop = $("#crop-select").val();
+        alert(crop);
+
+
+        $.ajax({
+            url: '/apps/lis-crop-observer/use-existing-shapefile/',
+            type: 'POST',
+            data: {'crop' : crop},
+            processData: false,
+            contentType: 'application/json',
+            error: function (status) {
+
+            }, success: function (response) {
+                alert(response);
+                alert(JSON.stringify(response));
+                var extents = response.bounds;
+                alert(extents)
+                shpSource = new ol.source.Vector({
+                    features: (new ol.format.GeoJSON()).readFeatures(response.geo_json)
+                });
+                shpLayer = new ol.layer.Vector({
+                    name:'shp_layer',
+                    extent:[extents[0],extents[1],extents[2],extents[3]],
+                    source: shpSource,
+                    style:new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: 'blue',
+                            lineDash: [4],
+                            width: 3
+                        }),
+                        fill: new ol.style.Fill({
+                            color: 'rgba(0, 0, 255, 0.1)'
+                        })
+                    })
+                });
+                map.addLayer(shpLayer);
+
+
+                map.getView().fit(shpLayer.getExtent(), map.getSize());
+                map.updateSize();
+                map.render();
+
+                var min = ol.proj.transform([extents[0],extents[1]],'EPSG:3857','EPSG:4326');
+                var max = ol.proj.transform([extents[2],extents[3]],'EPSG:3857','EPSG:4326');
+                var proj_coords = min.concat(max);
+                $("#shp-lat-lon").val(proj_coords);
+
+            }
+        });
+
+
+    };
+
+    $("#btn-ex-shp").on('click',use_existing_crop);
 
     get_ts = function(){
         $('.warning').html('');

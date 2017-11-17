@@ -36,6 +36,7 @@
     {% gizmo variable_select %}
     <br>
     {% gizmo crop_select %}
+    <button type="button" id="btn-ex-shp" name="btn-ex-shp" class="btn btn-default">Show Shapefile</button>
     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalUpload">Upload Shapefile</button>
     <br>
     <br>
@@ -82,8 +83,6 @@
                 <div class="form-group shp_upload">
                     <label class="control-label" for="shp-upload-input">Multiple Files are allowed</label>
                     <input id="shp-upload-input" name="shp-upload-input" type="file" multiple>
-                    <label class="control-label" for="crop_name">Input Crop Name</label>
-                    <input id="crop_name" name="crop_name" type="text">
                 </div>
             </div>
             <div class="modal-footer">
