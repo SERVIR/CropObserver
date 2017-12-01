@@ -53,7 +53,9 @@ var LIBRARY_OBJECT = (function() {
         gen_color_bar,
         prepare_files,
         upload_file,
+        upload_multiple_polygon_file,
         use_existing_crop,
+        get_districts,
         update_color_bar,
         update_wms;
     /************************************************************************
@@ -273,9 +275,9 @@ var LIBRARY_OBJECT = (function() {
         });
         var fullScreenControl = new ol.control.FullScreen();
         var view = new ol.View({
-            center: [9500000, 2735000],
+            center: [9330000, 3285000],
             projection: projection,
-            zoom: 5
+            zoom:6.7
         });
         wms_source = new ol.source.ImageWMS();
 
@@ -436,7 +438,7 @@ var LIBRARY_OBJECT = (function() {
                 alert(extents)
                 shpSource = new ol.source.Vector({
                     features: (new ol.format.GeoJSON()).readFeatures(response.geo_json)
-                });
+               });
                 shpLayer = new ol.layer.Vector({
                     name:'shp_layer',
                     extent:[extents[0],extents[1],extents[2],extents[3]],
@@ -460,7 +462,7 @@ var LIBRARY_OBJECT = (function() {
                 map.render();
 
                 var min = ol.proj.transform([extents[0],extents[1]],'EPSG:3857','EPSG:4326');
-                var max = ol.proj.transform([extents[2],extents[3]],'EPSG:3857','EPSG:4326');
+               var max = ol.proj.transform([extents[2],extents[3]],'EPSG:3857','EPSG:4326');
                 var proj_coords = min.concat(max);
                 $("#shp-lat-lon").val(proj_coords);
 
@@ -470,26 +472,85 @@ var LIBRARY_OBJECT = (function() {
 
     };
 
-    $("#btn-add-shp").on('click',upload_file);
+//    $("#btn-add-shp").on('click',upload_file);
+
+    upload_multiple_polygon_file = function(){
+        var files = $("#shp-upload-input")[0].files;
+        var data;
+
+
+        $modalUpload.modal('hide');
+        data = prepare_files(files);
+
+        $.ajax({
+            url: '/apps/lis-crop-observer/upload-multiple-polygon-shp/',
+            type: 'POST',
+            data: data,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            error: function (status) {
+
+            }, success: function (response) {
+
+                var crop_name = $("#crop-name-input").val();
+                $.ajax({
+                    url: '/apps/lis-crop-observer/change-dir/',
+                    type: 'GET',
+                    data: {'crop_name':crop_name},
+                    dataType: 'json',
+                    contentType: false,
+                    error: function (status) {
+
+                    }, success: function (response) {
+
+                        var crops = response.crops;
+                        var i;
+                        var crop;
+                        $("#crop-select").empty()
+
+                        for (i = 0; i < crops.length; i++) {
+                            crop = crops[i];
+                            $("#crop-select").append('<option value="' + crop + '">' + crop + '</option>');
+                        }
+
+                        var my_options = $("#crop-select option");
+                        my_options.sort(function(a,b) {
+                            if (a.text > b.text) return 1;
+                            else if (a.text < b.text) return -1;
+                            else return 0
+                        })
+                        $("#crop-select").empty().append(my_options);
+
+
+
+                    }
+                });
+            }
+        });
+
+
+    };
+
+    $("#btn-add-shp").on('click',upload_multiple_polygon_file);
 
     use_existing_crop = function(){
+        var district = $("#district-select").val();
         var crop = $("#crop-select").val();
-        alert(crop);
+
 
 
         $.ajax({
             url: '/apps/lis-crop-observer/use-existing-shapefile/',
-            type: 'POST',
-            data: {'crop' : crop},
-            processData: false,
+            type: 'GET',
+            data: {'district' : district, 'crop' : crop},
             contentType: 'application/json',
             error: function (status) {
 
             }, success: function (response) {
-                alert(response);
-                alert(JSON.stringify(response));
-                var extents = response.bounds;
-                alert(extents)
+                var extents = [8912254.297839355, 3042186.2310263347, 9818825.48021192, 3561140.678325965];
+                clear_coords();
+                shpLayer.getSource().clear();
                 shpSource = new ol.source.Vector({
                     features: (new ol.format.GeoJSON()).readFeatures(response.geo_json)
                 });
@@ -511,8 +572,9 @@ var LIBRARY_OBJECT = (function() {
                 map.addLayer(shpLayer);
 
 
-                map.getView().fit(shpLayer.getExtent(), map.getSize());
-                map.updateSize();
+
+//                map.getView().fit(shpLayer.getExtent(), map.getSize());
+//                map.updateSize();
                 map.render();
 
                 var min = ol.proj.transform([extents[0],extents[1]],'EPSG:3857','EPSG:4326');
@@ -520,13 +582,56 @@ var LIBRARY_OBJECT = (function() {
                 var proj_coords = min.concat(max);
                 $("#shp-lat-lon").val(proj_coords);
 
+
             }
         });
 
 
     };
 
-    $("#btn-ex-shp").on('click',use_existing_crop);
+    $("#district-select").on('change',use_existing_crop);
+
+
+    get_districts = function(){
+        var crop = $("#crop-select").val();
+
+
+        $.ajax({
+            url: '/apps/lis-crop-observer/get-districts/',
+            type: 'GET',
+            data: {'crop' : crop},
+            contentType: 'application/json',
+            error: function (status) {
+
+            }, success: function (response) {
+
+                var districts = response.districts;
+                var i;
+                var dist;
+                $("#district-select").empty()
+
+                for (i = 0; i < districts.length; i++) {
+                    dist = districts[i];
+                    $("#district-select").append('<option value="' + dist + '">' + dist + '</option>');
+                }
+
+                var my_options = $("#district-select option");
+                my_options.sort(function(a,b) {
+                    if (a.text > b.text) return 1;
+                    else if (a.text < b.text) return -1;
+                    else return 0
+                })
+                $("#district-select").empty().append(my_options);
+
+
+            }
+        });
+
+
+    };
+
+    $("#crop-select").on('change',get_districts);
+
 
     get_ts = function(){
         $('.warning').html('');
@@ -539,6 +644,8 @@ var LIBRARY_OBJECT = (function() {
             data:datastring,
             success:function(result){
                 var json_response = JSON.parse(result);
+                var district_name = $("#district-select").val();
+                var crop_name = $("#crop-select").val();
                 if (json_response.success == "success"){
                     $('.warning').html('');
                     $('#plotter').highcharts({
@@ -547,7 +654,7 @@ var LIBRARY_OBJECT = (function() {
                             zoomType: 'x'
                         },
                         title: {
-                            text: json_response.display_name + " values at " +json_response.location,
+                            text: json_response.display_name + " values for " + crop_name + " in district " + district_name,
                             style: {
                                 fontSize: '14px'
                             }
@@ -587,7 +694,11 @@ var LIBRARY_OBJECT = (function() {
         });
     };
 
-    $("#btn-get-plot").on('click',get_ts);
+
+//    $("#btn-get-plot").on('click',get_ts);
+    $("#variable-select").on('change',get_ts);
+    $("#district-select").on('change',get_ts);
+
 
     prepare_files = function (files) {
         var data = new FormData();

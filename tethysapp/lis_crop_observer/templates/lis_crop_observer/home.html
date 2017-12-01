@@ -33,17 +33,19 @@
 <br>
 <form id="get-ts" name="get-ts" action="get_ts/" method="POST">
     {% csrf_token %}
-    {% gizmo variable_select %}
-    <br>
     {% gizmo crop_select %}
-    <button type="button" id="btn-ex-shp" name="btn-ex-shp" class="btn btn-default">Show Shapefile</button>
+    {% gizmo district_select %}
     <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modalUpload">Upload Shapefile</button>
     <br>
     <br>
     <input type="text" name="point-lat-lon" id="point-lat-lon" hidden>
     <input type="text" name="poly-lat-lon" id="poly-lat-lon" hidden>
     <input type="text" name="shp-lat-lon" id="shp-lat-lon" hidden>
+    {% gizmo variable_select %}
+    <br>
+    <!--
     <button type="button" id="btn-get-plot" name="btn-get-plot" class="btn btn-default">Show Timeseries</button>
+    -->
 </form>
 <br>
 <br>
@@ -83,6 +85,8 @@
                 <div class="form-group shp_upload">
                     <label class="control-label" for="shp-upload-input">Multiple Files are allowed</label>
                     <input id="shp-upload-input" name="shp-upload-input" type="file" multiple>
+                    <label class="crop-name" for="crop-name-input">Input Crop Name</label>
+                    <input id="crop-name-input" name="crop-name-input" type="text">
                 </div>
             </div>
             <div class="modal-footer">

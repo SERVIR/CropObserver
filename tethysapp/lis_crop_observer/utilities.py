@@ -261,6 +261,7 @@ def get_crops(directory):
     return crops
 
 
+
 #def find_shp(directory, crop):
     #crops_dir = os.path.join(directory, 'app_workspace/crops/')
     #for file in crops_dir:

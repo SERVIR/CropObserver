@@ -38,10 +38,13 @@ def home(request):
                                   name='variable-select',
                                   options=var_list, )
 
-    crop_select = SelectInput(display_text='Select a Crop or Upload a New Crop Shapefile',
+    crop_select = SelectInput(display_text='Select a Crop',
                                   name='crop-select',
                                   options=crop_list,
-                                  #attributes={"onchange":"find_shp(SHAPEFILES, crop-select)"}
+                              )
+
+    district_select = SelectInput(display_text='Select a District',
+                                  name='district-select',
                               )
 
     date_select = SelectInput(display_text='Select a Date',
@@ -56,6 +59,7 @@ def home(request):
     context = {
         'host': 'http://%s' % request.get_host(),
         'variable_select': variable_select,
+        'district_select': district_select,
         'crop_select': crop_select,
         'date_select': date_select,
         'first_day': first_day,
@@ -76,7 +80,6 @@ def get_ts(request):
 
     if request.is_ajax() and request.method == 'POST':
         variable = request.POST["variable-select"]
-        crop = request.POST["crop-select"]
         variable_info = get_variable_info(LIS_DIRECTORY,variable)
 
 
