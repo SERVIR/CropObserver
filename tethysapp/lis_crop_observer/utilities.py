@@ -8,6 +8,7 @@ import fiona
 import pyproj
 import geojson, ast
 from colour import Color
+import time as tim
 import uuid
 from .app import LisCropObserver as app
 
@@ -17,19 +18,21 @@ def get_lis_variables(directory):
     dir_path = os.path.join(directory,'')
 
     for file in os.listdir(dir_path):
-         nc_fid = Dataset(dir_path+file,'r')
-         nc_var = nc_fid.variables
+        nc_fid = Dataset(dir_path+file,'r')
+        nc_var = nc_fid.variables
 
-         var_list = []
-         for var,name in zip(nc_var.values(),nc_fid.variables.keys()):
-             for attr in var.ncattrs():
-                 if attr == "standard_name":
-                    display_name = getattr(var,attr)
-                    units = getattr(var,"units")
-                    var_list.append((str(display_name)+" "+str(units),name))
+        var_list = []
+        for var,name in zip(nc_var.values(),nc_fid.variables.keys()):
+            has_long_name = False
+            for attr in var.ncattrs():
+                if attr == "long_name":
+                    has_long_name = True
+            if has_long_name is False:
+                display_name = name
+                var_list.append((str(display_name), name))
 
-         return var_list
-         break
+        return var_list
+
 
 def get_lis_dates(directory):
     dir_path = os.path.join(directory, '')
@@ -47,6 +50,7 @@ def get_lis_dates(directory):
             select_dates.append([display_date,current_date])
 
     return select_dates
+
 
 def get_range(directory,var_list,breaks):
 
@@ -79,32 +83,31 @@ def get_range(directory,var_list,breaks):
         var_json["name"] = var_name
         var_metadata.append(var_json)
 
-
-
     return var_metadata,cbar
 
 
 def get_variable_info(directory,variable):
-
-    dir_path = os.path.join(directory,'')
+    dir_path = os.path.join(directory, '')
 
     for file in os.listdir(dir_path):
-         nc_fid = Dataset(dir_path+file,'r')
-         nc_var = nc_fid.variables
+        nc_fid = Dataset(dir_path + file, 'r')
+        nc_var = nc_fid.variables
 
-         for var,name in zip(nc_var.values(),nc_fid.variables.keys()):
-             if name == variable:
-                 for attr in var.ncattrs():
-                     if attr == "standard_name":
-                        var_info = {}
-                        display_name = getattr(var,attr)
-                        units = getattr(var,"units")
-                        var_info["display_name"] = display_name
-                        var_info["units"] = units
+        for var, name in zip(nc_var.values(), nc_fid.variables.keys()):
+            if name == variable:
+                lname_found = False
+                for attr in var.ncattrs():
+                    if attr == "long_name":
+                        lname_found = True
+                if lname_found == False:
+                    var_info = {}
+                    display_name = name
+                    units = "Percentile"
+                    var_info["display_name"] = display_name
+                    var_info["units"] = units
 
+        return var_info
 
-         return var_info
-         break
 
 def get_poly_timeseries(directory,var_name,bounds):
 
@@ -139,13 +142,16 @@ def get_poly_timeseries(directory,var_name,bounds):
 
             var_vals = current_timestep[lat_idx:lat2_idx, lon_idx:lon2_idx]
             var_val = np.mean(var_vals)
-            ts_plot.append([int(v) * 1000, round(float(var_val), 3)])
+            utc_time = tim.mktime(datetime.strptime(str(v), "%Y%m%d").timetuple())
+            ts_plot.append([utc_time * 1000, round(float(var_val), 3)])
 
     graph_json["values"] = ts_plot
     graph_json["bounds"] = [round(minx,2),round(miny,2),round(maxx,2),round(maxy,2)]
     graph_json["success"] = "success"
     graph_json = json.dumps(graph_json)
+
     return graph_json
+
 
 def get_pt_timeseries(directory,var_name,pt_coords):
 
@@ -174,7 +180,8 @@ def get_pt_timeseries(directory,var_name,pt_coords):
                 lat_idx = (abslon.argmin())
 
                 var_val = current_timestep[lat_idx,lon_idx]
-                ts_plot.append([int(v)*1000,round(float(var_val),3)])
+                utc_time = tim.mktime(datetime.strptime(str(v), "%Y%m%d").timetuple())
+                ts_plot.append([utc_time * 1000, round(float(var_val), 3)])
 
 
         graph_json["values"] = ts_plot
