@@ -615,6 +615,7 @@ var LIBRARY_OBJECT = (function() {
     };
 
     $("#district-select").on('change',crop_district_info);
+    $("#crop-select").on('change',crop_district_info);
 
 
     get_districts = function(){
@@ -708,14 +709,29 @@ var LIBRARY_OBJECT = (function() {
                         series: [
                             {
                            type:'area',
+                           name:'Planting Season',
+                            marker:{enabled:false},
+                            lineWidth:0,
+                            color:'rgba(255,255,0,.5)',
+                           data:[[1049155200000,0],[1049155200000,100],[1051747199000,100],[1051747199000,0]]
+
+                        },{
+                           type:'area',
                            name:'Growing Season',
                             marker:{enabled:false},
                             lineWidth:0,
-                            color:'rgba(156,156,156,.5)',
-                           data:[[1051401894000,0],[1051401894000,100],[1056672294000,100],[1056672294000,0]]
+                            color:'rgba(51,102,0,.5)',
+                           data:[[1051747200000,0],[1051747200000,100],[1057017599000,100],[1057017599000,0]]
 
-                        },
-                            {
+                        },{
+                           type:'area',
+                           name:'Harvesting Season',
+                            marker:{enabled:false},
+                            lineWidth:0,
+                            color:'rgba(153,76,0,.5)',
+                           data:[[1057017600000,0],[1057017600000,100],[1059695999000,100],[1059695999000,0]]
+
+                        },{
                             data:json_response.values,
                             name: json_response.variable
                         }

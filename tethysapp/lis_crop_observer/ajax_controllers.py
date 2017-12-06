@@ -201,42 +201,45 @@ def crop_district_info(request):
         json_path = "crops/" + request.GET.get('json_path')
         app_workspace = app.get_app_workspace()
         json_path = os.path.join(app_workspace.path, json_path)
-        data = json.load(open(json_path))
+        if (os.path.isfile(json_path)):
+            data = json.load(open(json_path))
 
-        json_properties = data["geo_json"]["features"][0]["properties"]
+            json_properties = data["geo_json"]["features"][0]["properties"]
 
-        crop_percentage = "Crop Percentage not found."
+            crop_percentage = "Crop Percentage not found."
 
-        planting = []
-        growing = []
-        harvesting = []
+            planting = []
+            growing = []
+            harvesting = []
 
-        for property in json_properties:
-            if property[3:] == "percent":
-                crop_percentage = json_properties[property]
+            for property in json_properties:
+                if property[3:] == "percent":
+                    crop_percentage = json_properties[property]
 
-            if json_properties[property] == 1.0:
-                planting.append(property[5:].title())
+                if json_properties[property] == 1.0:
+                    planting.append(property[5:].title())
 
-            if json_properties[property] == 2.0:
-                growing.append(property[5:].title())
+                if json_properties[property] == 2.0:
+                    growing.append(property[5:].title())
 
-            if json_properties[property] == 3.0:
-                harvesting.append(property[5:].title())
+                if json_properties[property] == 3.0:
+                    harvesting.append(property[5:].title())
 
-        info_html += "Crop land cover percentage: " + crop_percentage + " "
+            info_html += "Crop land cover percentage: " + crop_percentage + " "
 
-        info_html += "<br>Planting months:"
-        for month in planting:
-            info_html += "  " + month
+            info_html += "<br>Planting months:"
+            for month in planting:
+                info_html += "  " + month
 
-        info_html += "<br>Growing months:"
-        for month in growing:
-            info_html += "  " + month
+            info_html += "<br>Growing months:"
+            for month in growing:
+                info_html += "  " + month
 
-        info_html += "<br>Harvesting months:"
-        for month in harvesting:
-            info_html += "  " + month
+            info_html += "<br>Harvesting months:"
+            for month in harvesting:
+                info_html += "  " + month
+        else:
+            info_html = "No crop data available"
 
         return_obj['info_html'] = info_html
 
