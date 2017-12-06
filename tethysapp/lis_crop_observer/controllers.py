@@ -9,8 +9,8 @@ from lis import *
 from utilities import *
 
 
-LIS_DIRECTORY = "/Users/student/lis/"
-SHAPEFILES = "/Users/student/tethysdev/tethysapp-lis_crop_observer/tethysapp/lis_crop_observer/workspaces/"
+LIS_DIRECTORY = "/Users/TylorBayer/lis"
+SHAPEFILES = "/Users/TylorBayer/tethysdev/tethysapp-lis_crop_observer/tethysapp/lis_crop_observer/workspaces/"
 
 @login_required()
 def home(request):
@@ -18,7 +18,8 @@ def home(request):
     Controller for the app home page.
     """
 
-    display_vars = {'Qs': 'Runoff', 'rainfall': 'Rainfall', 'total_precip': 'Total Precip'}
+    display_vars = {'RootzoneSoilPercentile': 'Rootzone Soil Percentile',
+                    'SurfaceSoilPercentile': 'Surface Soil Percentile', 'TWSPercentile': 'TWS Percentile'}
 
     var_metadata, cbar = get_range(LIS_DIRECTORY, display_vars, 20)
 

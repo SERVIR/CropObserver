@@ -56,6 +56,7 @@ var LIBRARY_OBJECT = (function() {
         upload_multiple_polygon_file,
         use_existing_crop,
         get_districts,
+        crop_district_info,
         update_color_bar,
         update_wms;
     /************************************************************************
@@ -591,6 +592,30 @@ var LIBRARY_OBJECT = (function() {
 
     $("#district-select").on('change',use_existing_crop);
 
+    crop_district_info = function(){
+        var crop = $("#crop-select").val();
+        var district_name = $("#district-select").val();
+        var json_path = crop + "/" + district_name + ".json";
+        var info_html = "Crop and district shapefiles don't have correct info.";
+
+
+        $.ajax({
+            url: '/apps/lis-crop-observer/crop-district-info/',
+            type: 'GET',
+            data: {'json_path' : json_path},
+            contentType: 'application/json',
+            error: function (status) {
+
+            }, success: function (response) {
+                info_html = response.info_html;
+                $('#crop-district-info').html(info_html);
+            }
+        });
+
+    };
+
+    $("#district-select").on('change',crop_district_info);
+
 
     get_districts = function(){
         var crop = $("#crop-select").val();
@@ -671,6 +696,7 @@ var LIBRARY_OBJECT = (function() {
                             }
                         },
                         yAxis: {
+                            max:100,
                             title: {
                                 text: json_response.units
                             }
@@ -679,11 +705,21 @@ var LIBRARY_OBJECT = (function() {
                         exporting: {
                             enabled: true
                         },
-                        series: [{
+                        series: [
+                            {
+                           type:'area',
+                           name:'Growing Season',
+                            marker:{enabled:false},
+                            lineWidth:0,
+                            color:'rgba(156,156,156,.5)',
+                           data:[[1051401894000,0],[1051401894000,100],[1056672294000,100],[1056672294000,0]]
+
+                        },
+                            {
                             data:json_response.values,
                             name: json_response.variable
-                        }]
-
+                        }
+                        ]
                     });
                 }
             },

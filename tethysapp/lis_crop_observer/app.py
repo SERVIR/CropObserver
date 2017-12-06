@@ -48,6 +48,10 @@ class LisCropObserver(TethysAppBase):
                    url='lis-crop-observer/get-districts',
                    controller='lis_crop_observer.ajax_controllers.get_districts'
                    ),
+            UrlMap(name='crop-district-info',
+                   url='lis-crop-observer/crop-district-info',
+                   controller='lis_crop_observer.ajax_controllers.crop_district_info'
+                   ),
         )
 
         return url_maps
