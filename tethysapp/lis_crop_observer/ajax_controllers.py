@@ -212,6 +212,8 @@ def crop_district_info(request):
             growing = []
             harvesting = []
 
+            crop_seasons = {}
+
             for property in json_properties:
                 if property[3:] == "percent":
                     crop_percentage = json_properties[property]
@@ -238,10 +240,18 @@ def crop_district_info(request):
             info_html += "<br>Harvesting months:"
             for month in harvesting:
                 info_html += "  " + month
+
+            crop_seasons.update({'Planting': planting})
+            crop_seasons.update({'Growing': growing})
+            crop_seasons.update({'Harvesting': harvesting})
+
+            return_obj['crop_seasons'] = crop_seasons
+
         else:
-            info_html = "No crop data available"
+            info_html = "No crop data available for this district."
 
         return_obj['info_html'] = info_html
+
 
     return JsonResponse(return_obj)
 

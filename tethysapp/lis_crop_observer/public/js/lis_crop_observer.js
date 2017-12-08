@@ -44,19 +44,21 @@ var LIBRARY_OBJECT = (function() {
         cbar_str,
         checkCsrfSafe,
         clear_coords,
+        update_vars,
+        clear_vars,
         getCookie,
         init_events,
         init_vars,
         init_map,
         init_slider,
         get_ts,
+        crop_district_info,
         gen_color_bar,
         prepare_files,
         upload_file,
         upload_multiple_polygon_file,
         use_existing_crop,
         get_districts,
-        crop_district_info,
         update_color_bar,
         update_wms;
     /************************************************************************
@@ -233,6 +235,10 @@ var LIBRARY_OBJECT = (function() {
         $("#poly-lat-lon").val('');
         $("#point-lat-lon").val('');
         $("#shp-lat-lon").val('');
+    };
+
+    clear_vars = function() {
+        $(".variables").remove();
     };
 
     //Creating the map object
@@ -522,9 +528,6 @@ var LIBRARY_OBJECT = (function() {
                             else return 0
                         })
                         $("#crop-select").empty().append(my_options);
-
-
-
                     }
                 });
             }
@@ -614,9 +617,6 @@ var LIBRARY_OBJECT = (function() {
 
     };
 
-    $("#district-select").on('change',crop_district_info);
-    $("#crop-select").on('change',crop_district_info);
-
 
     get_districts = function(){
         var crop = $("#crop-select").val();
@@ -658,10 +658,24 @@ var LIBRARY_OBJECT = (function() {
 
     $("#crop-select").on('change',get_districts);
 
+    update_vars = function() {
+        clear_vars();
+        var select_vars = $("#variable-select").val();
+        var variable = "";
+
+        if (select_vars != null) {
+            for (var i = 0; i < select_vars.length; i++) {
+                variable = select_vars[i];
+                $("#get-ts").append('<input type="text" name=' + variable + ' class="variables" id="' + variable + '" value="' + variable + '" hidden>');
+            }
+        }
+    };
+
 
     get_ts = function(){
         $('.warning').html('');
         var datastring = $get_ts.serialize();
+        var var_list = $("#variable-select").val();
 
         $.ajax({
             type:"POST",
@@ -672,9 +686,10 @@ var LIBRARY_OBJECT = (function() {
                 var json_response = JSON.parse(result);
                 var district_name = $("#district-select").val();
                 var crop_name = $("#crop-select").val();
+
                 if (json_response.success == "success"){
                     $('.warning').html('');
-                    $('#plotter').highcharts({
+                    var chart = $('#plotter').highcharts({
                         chart: {
                             type:'area',
                             zoomType: 'x'
@@ -731,26 +746,72 @@ var LIBRARY_OBJECT = (function() {
                             color:'rgba(153,76,0,.5)',
                            data:[[1057017600000,0],[1057017600000,100],[1059695999000,100],[1059695999000,0]]
 
-                        },{
-                            data:json_response.values,
-                            name: json_response.variable
                         }
                         ]
-                    });
+                    }).highcharts();
+
+                    for(var i = 0; i < var_list.length; ++i) {
+                        var variable = var_list[i];
+                        var values = json_response.values[variable];
+
+                        chart.addSeries({
+                            data: values,
+                            name: variable
+                        });
+
+                        var seasons = ["Planting", "Growing", "Harvesting"];
+                        var json_path = crop_name + "/" + district_name + ".json";
+                        var crop_season_vals = [];
+                        var info_html = "";
+
+                        $.ajax({
+                            url: '/apps/lis-crop-observer/crop-district-info/',
+                            type: 'GET',
+                            data: {'json_path' : json_path},
+                            contentType: 'application/json',
+                            error: function (status) {
+
+                            }, success: function (response) {
+                                for(var i = 0; i < seasons.length; ++i) {
+                                    crop_season_vals = [];
+                                    var months = response.crop_seasons[seasons[i]];
+
+                                    for (var j = 0; j < values.length; ++j) {
+                                        var date = new Date(values[j][0]).toString().substr(4, 3);
+
+                                        if (date == months[i]) {
+                                            crop_season_vals.push(values[j][1]);
+                                        }
+                                    }
+                                    console.log(Math.max.apply(null, crop_season_vals));
+
+                                    var total = 0;
+                                    for (var k = 0; k < crop_season_vals.length; k++) {
+                                        total += grades[k];
+                                    }
+                                    var avg = total / grades.length;
+                                    // var max =
+                                }
+                                $('#crop-district-info').html(info_html);
+                            }
+                        });
+                    }
+                }
+                else {
+                    $('#plotter').empty();
                 }
             },
             error:function(request,status,error){
                 $('.warning').html('<b style="color:red">'+error+'. Please select another point and try again.</b>');
             }
-
         });
     };
 
-
-//    $("#btn-get-plot").on('click',get_ts);
+    $("#district-select").on('change',crop_district_info);
+    $("#crop-select").on('change',crop_district_info);
+    $("#variable-select").on('change',update_vars);
     $("#variable-select").on('change',get_ts);
     $("#district-select").on('change',get_ts);
-
 
     prepare_files = function (files) {
         var data = new FormData();
