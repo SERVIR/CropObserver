@@ -53,6 +53,7 @@ var LIBRARY_OBJECT = (function() {
         init_slider,
         get_ts,
         crop_district_info,
+        stdev,
         gen_color_bar,
         prepare_files,
         upload_file,
@@ -672,10 +673,45 @@ var LIBRARY_OBJECT = (function() {
     };
 
 
+    stdev = function(arr) {
+        var n = arr.length;
+        var sum = 0;
+
+        arr.map(function(data) {
+            sum+=data;
+        });
+
+        var mean = sum / n;
+
+        var variance = 0.0;
+        var v1 = 0.0;
+        var v2 = 0.0;
+
+        if (n != 1) {
+            for (var i = 0; i<n; i++) {
+                v1 = v1 + (arr[i] - mean) * (arr[i] - mean);
+                v2 = v2 + (arr[i] - mean);
+            }
+
+            v2 = v2 * v2 / n;
+            variance = (v1 - v2) / (n-1);
+            if (variance < 0) { variance = 0; }
+            var stddev = Math.sqrt(variance);
+        }
+
+        return {
+            mean: Math.round(mean*100)/100,
+            variance: variance,
+            deviation: Math.round(stddev*100)/100
+        };
+    };
+
+
     get_ts = function(){
         $('.warning').html('');
         var datastring = $get_ts.serialize();
         var var_list = $("#variable-select").val();
+        $('#seasons-statistic-info').empty();
 
         $.ajax({
             type:"POST",
@@ -722,80 +758,93 @@ var LIBRARY_OBJECT = (function() {
                             enabled: true
                         },
                         series: [
-                            {
-                           type:'area',
-                           name:'Planting Season',
-                            marker:{enabled:false},
-                            lineWidth:0,
-                            color:'rgba(255,255,0,.5)',
-                           data:[[1049155200000,0],[1049155200000,100],[1051747199000,100],[1051747199000,0]]
-
-                        },{
-                           type:'area',
-                           name:'Growing Season',
-                            marker:{enabled:false},
-                            lineWidth:0,
-                            color:'rgba(51,102,0,.5)',
-                           data:[[1051747200000,0],[1051747200000,100],[1057017599000,100],[1057017599000,0]]
-
-                        },{
-                           type:'area',
-                           name:'Harvesting Season',
-                            marker:{enabled:false},
-                            lineWidth:0,
-                            color:'rgba(153,76,0,.5)',
-                           data:[[1057017600000,0],[1057017600000,100],[1059695999000,100],[1059695999000,0]]
-
-                        }
+                        //     {
+                        //    type:'area',
+                        //    name:'Planting Season',
+                        //     marker:{enabled:false},
+                        //     lineWidth:0,
+                        //     color:'rgba(255,255,0,.5)',
+                        //    data:[[1049155200000,0],[1049155200000,100],[1051747199000,100],[1051747199000,0]]
+                        //
+                        // },{
+                        //    type:'area',
+                        //    name:'Growing Season',
+                        //     marker:{enabled:false},
+                        //     lineWidth:0,
+                        //     color:'rgba(51,102,0,.5)',
+                        //    data:[[1051747200000,0],[1051747200000,100],[1057017599000,100],[1057017599000,0]]
+                        //
+                        // },{
+                        //    type:'area',
+                        //    name:'Harvesting Season',
+                        //     marker:{enabled:false},
+                        //     lineWidth:0,
+                        //     color:'rgba(153,76,0,.5)',
+                        //    data:[[1057017600000,0],[1057017600000,100],[1059695999000,100],[1059695999000,0]]
+                        //
+                        // }
                         ]
                     }).highcharts();
 
-                    for(var i = 0; i < var_list.length; ++i) {
-                        var variable = var_list[i];
-                        var values = json_response.values[variable];
+                    $('#seasons-statistic-info').append("<h5>Crop Season Statistics</h5>");
 
-                        chart.addSeries({
-                            data: values,
-                            name: variable
-                        });
+                    var seasons = ["Planting", "Growing", "Harvesting"];
+                    var json_path = crop_name + "/" + district_name + ".json";
+                    var season_months = []
 
-                        var seasons = ["Planting", "Growing", "Harvesting"];
-                        var json_path = crop_name + "/" + district_name + ".json";
-                        var crop_season_vals = [];
-                        var info_html = "";
+                    $.ajax({
+                        url: '/apps/lis-crop-observer/crop-district-info/',
+                        type: 'GET',
+                        data: {'json_path' : json_path},
+                        contentType: 'application/json',
+                        error: function (status) {
 
-                        $.ajax({
-                            url: '/apps/lis-crop-observer/crop-district-info/',
-                            type: 'GET',
-                            data: {'json_path' : json_path},
-                            contentType: 'application/json',
-                            error: function (status) {
+                        }, success: function (response) {
+                            for(var i = 0; i < seasons.length; ++i) {
+                                season_months[seasons[i]] = response.crop_seasons[seasons[i]];
+                            }
 
-                            }, success: function (response) {
-                                for(var i = 0; i < seasons.length; ++i) {
-                                    crop_season_vals = [];
-                                    var months = response.crop_seasons[seasons[i]];
+                            for(var i = 0; i < var_list.length; ++i) {
+                                var variable = var_list[i];
+                                var values = json_response.values[variable];
+                                $('#seasons-statistic-info').append("<h6>" + variable + "</h6>");
 
-                                    for (var j = 0; j < values.length; ++j) {
-                                        var date = new Date(values[j][0]).toString().substr(4, 3);
+                                chart.addSeries({
+                                    data: values,
+                                    name: variable
+                                });
 
-                                        if (date == months[i]) {
-                                            crop_season_vals.push(values[j][1]);
+                                for(var m = 0; m < seasons.length; ++m) {
+                                    $('#seasons-statistic-info').append(seasons[m] + ":<br>");
+
+                                    var crop_season_vals = [];
+                                    var months =  season_months[seasons[m]];
+
+                                    for(var n = 0; n < months.length; ++n) {
+                                        for (var k = 0; k < values.length; ++k) {
+                                            var date = new Date(values[k][0]).toString().substr(4, 3);
+
+                                            if (date == months[n]) {
+                                                crop_season_vals.push(values[k][1]);
+                                            }
                                         }
                                     }
-                                    console.log(Math.max.apply(null, crop_season_vals));
 
                                     var total = 0;
-                                    for (var k = 0; k < crop_season_vals.length; k++) {
-                                        total += grades[k];
+                                    for (var l = 0; l < crop_season_vals.length; l++) {
+                                        total += crop_season_vals[l];
                                     }
-                                    var avg = total / grades.length;
-                                    // var max =
+                                    var avg = (total / crop_season_vals.length).toFixed(2);
+                                    var max = Math.max.apply(null, crop_season_vals).toFixed(2);
+                                    var min = Math.min.apply(null, crop_season_vals).toFixed(2);
+                                    var std_dev = stdev(crop_season_vals).deviation;
+
+                                    $('#seasons-statistic-info').append("Mean = " + avg + "<br>Max = " + max + "<br>Min = "
+                                        + min + "<br>SD = " + std_dev + "<br><br>");
                                 }
-                                $('#crop-district-info').html(info_html);
                             }
-                        });
-                    }
+                        }
+                    });
                 }
                 else {
                     $('#plotter').empty();
