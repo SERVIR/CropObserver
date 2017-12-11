@@ -66,7 +66,7 @@ $.ajax({
 
 ## Motivation
 
-This project was for a joint class with Dr. Jim Nelson at BYU and Dr. Ben Zaitchik at JHU. Corey Krewson, Wanshu Nie, Hechang and Tylor Bayer.
+This project was for a joint class with Dr. Jim Nelson at BYU and Dr. Ben Zaitchik at JHU.
 
 ## Installation
 
