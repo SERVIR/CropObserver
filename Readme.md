@@ -83,7 +83,7 @@ Corey Krewson, Wanshu Nie, Hechang and Tylor Bayer.
 ## Limitations
 
 There are a few limitations with this app that could be addressed in later version. 
-1. When installing the app, lis/grace directories must be changed manually as well as the address for the app workspaces
+1. When installing the app, lis/grace directories must be changed manually as well as the address for the app workspaces.
 2. Shapefiles are saved in the app workspaces. It would be better data-wise if the shapefiles were uploaded to a geoserver. 
 3. Highlighting areas of the graph for different seasons is coded for one year but hard to do when multiple years are presented. More work would be needed to highlight these seasons if more data is used. 
 4. Shafiles need to be in the same format as given to us by ICIMOD (i.e. "NAME_3" is the district, crop percentages as well as months are needed, etc.)
