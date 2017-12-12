@@ -262,6 +262,7 @@ def get_crops(directory):
 
     crops = []
 
+    crops.append(("",""))
     for crop in os.listdir(crops_dir):
         crops.append((str(crop),str(crop)))
 
