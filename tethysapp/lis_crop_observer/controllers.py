@@ -9,8 +9,8 @@ from lis import *
 from utilities import *
 
 
-LIS_DIRECTORY = "/Users/TylorBayer/lis"
-SHAPEFILES = "/Users/TylorBayer/tethysdev/tethysapp-lis_crop_observer/tethysapp/lis_crop_observer/workspaces/"
+LIS_DIRECTORY = "/Users/student/grace"
+SHAPEFILES = "/Users/student/tethysdev/tethysapp-lis_crop_observer/tethysapp/lis_crop_observer/workspaces/"
 
 @login_required()
 def home(request):
