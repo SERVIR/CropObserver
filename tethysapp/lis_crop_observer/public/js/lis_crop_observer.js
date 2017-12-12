@@ -65,6 +65,7 @@ var LIBRARY_OBJECT = (function() {
     /************************************************************************
      *                    PRIVATE FUNCTION IMPLEMENTATIONS
      *************************************************************************/
+
     init_vars = function(){
         var $layers_element = $('#layers');
         slider_max = $layers_element.attr('data-slider-max');
