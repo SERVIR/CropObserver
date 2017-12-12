@@ -3,6 +3,9 @@
 {% load tethys_gizmos staticfiles %}
 
 {% block header_buttons %}
+<div class="header-button glyphicon-button" data-toggle="tooltip" data-placement="bottom" title="About">
+    <a data-toggle="modal" data-target="#about"><span class="glyphicon glyphicon-info-sign"></span></a>
+</div>
 {% endblock %}
 
 {% block styles %}
@@ -102,6 +105,31 @@
         <!--End modal content-->
     </div>
 </form>
+<!-- About Modal -->
+<div class="modal fade" id="about" tabindex="-1" role="dialog" aria-labelledby="about-modal-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h2 class="modal-title" id="about-modal-label">About Lis Crop Observer</h2>
+            </div>
+            <div class="modal-body">
+                <p id="overview"><b>
+                    This web application allows the user to look at time-series data for crops within a specific district.
+                </b></p>
+                <h3>How it works</h3>
+                <h6>1. Choose the crop that you want to observe. If the crop is not listed, you can upload a shapefile.</h6>
+                <h6>2. Choose the district.</h6>
+                <h6>2. Choose the variable.</h6>
+                <br>
+                <br>
+                <h6> The time-series will show automatically. You can simply change the crop, district, or variable now and the graph will update accordingly.
+                    On the left side of the screen, information for the crop is also given such as mean, max, min, and standard deviation values for the variable chosen.
+                </h6>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 
