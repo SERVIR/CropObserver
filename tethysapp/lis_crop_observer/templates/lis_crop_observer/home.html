@@ -24,14 +24,14 @@
 {% endblock %}
 
 {% block app_navigation_items %}
-<br>
-<br>
-<b>Map Interaction</b>
-<select id="types" class="btn btn-xs btn-success" data-width="fit">
-    <option value="None">None</option>
-    <option value="Point">Point</option>
-    <option value="Polygon">Polygon</option>
-</select>
+<!--<br>-->
+<!--<br>-->
+<!--<b>Map Interaction</b>-->
+<!--<select id="types" class="btn btn-xs btn-success" data-width="fit">-->
+    <!--<option value="None">None</option>-->
+    <!--<option value="Point">Point</option>-->
+    <!--<option value="Polygon">Polygon</option>-->
+<!--</select>-->
 <br>
 <br>
 <form id="get-ts" name="get-ts" action="get_ts/" method="POST">
@@ -115,17 +115,24 @@
             </div>
             <div class="modal-body">
                 <p id="overview"><b>
-                    This web application allows the user to look at time-series data for crops within a specific district.
+                    This web application allows users to view drought index time-series data for crops within a specific district in Nepal.
                 </b></p>
                 <h3>How it works</h3>
                 <h6>1. Choose the crop that you want to observe. If the crop is not listed, you can upload a shapefile.</h6>
                 <h6>2. Choose the district.</h6>
-                <h6>3. Choose the variable.</h6>
+                <h6>3. Choose the time-series variable to display.</h6>
                 <br>
                 <br>
                 <h6> The time-series will show automatically. You can simply change the crop, district, or variable now and the graph will update accordingly.
                     On the left side of the screen, information for the crop is also given such as mean, max, min, and standard deviation values for the variable chosen.
                 </h6>
+                <br>
+                <br>
+                <p><b>All variables are percentiles generated with NASA's GRACE data, processed through their LIS framework.</b></p>
+                <h3>Variables</h3>
+                <h6>Surface Soil Percentile:  Surface level drought data.</h6>
+                <h6>Root Zone Soil Percentile:  Root level drought data.</h6>
+                <h6>TWS Percentile:  Terrestrial water storage or aquifer level drought data.</h6>
             </div>
         </div>
     </div>
