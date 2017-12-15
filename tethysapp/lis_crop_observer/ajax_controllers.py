@@ -227,19 +227,24 @@ def crop_district_info(request):
                 if json_properties[property] == 3.0:
                     harvesting.append(property[5:].title())
 
-            info_html += "Crop land cover percentage: " + crop_percentage + " "
+            info_html += '<tr><th>Variable</th>'
 
-            info_html += "<br>Planting months:"
+            info_html += "<th>Planting months:"
             for month in planting:
                 info_html += "  " + month
+            info_html += "</th>"
 
-            info_html += "<br>Growing months:"
+            info_html += "<th>Growing months:"
             for month in growing:
                 info_html += "  " + month
+            info_html += "</th>"
 
-            info_html += "<br>Harvesting months:"
+            info_html += "<th>Harvesting months:"
             for month in harvesting:
                 info_html += "  " + month
+            info_html += "</th>"
+
+            info_html += "</tr>"
 
             crop_seasons.update({'Planting': planting})
             crop_seasons.update({'Growing': growing})
@@ -251,6 +256,7 @@ def crop_district_info(request):
             info_html = "No crop data available for this district."
 
         return_obj['info_html'] = info_html
+        return_obj['crop_percentage'] = '<p class="crop-stats">Crop land cover percentage: ' + crop_percentage + "</p>"
 
 
     return JsonResponse(return_obj)
