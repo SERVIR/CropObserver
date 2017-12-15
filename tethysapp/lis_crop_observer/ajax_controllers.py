@@ -227,22 +227,22 @@ def crop_district_info(request):
                 if json_properties[property] == 3.0:
                     harvesting.append(property[5:].title())
 
-            info_html += '<tr><th>Variable</th>'
+            info_html += '<tr><th><h6>Variable</h6></th>'
 
-            info_html += "<th>Planting months:"
+            info_html += "<th><h6>Planting months:"
             for month in planting:
                 info_html += "  " + month
-            info_html += "</th>"
+            info_html += "</h6></th>"
 
-            info_html += "<th>Growing months:"
+            info_html += "<th><h6>Growing months:"
             for month in growing:
                 info_html += "  " + month
-            info_html += "</th>"
+            info_html += "</h6></th>"
 
-            info_html += "<th>Harvesting months:"
+            info_html += "<th><h6>Harvesting months:"
             for month in harvesting:
                 info_html += "  " + month
-            info_html += "</th>"
+            info_html += "</h6></th>"
 
             info_html += "</tr>"
 
