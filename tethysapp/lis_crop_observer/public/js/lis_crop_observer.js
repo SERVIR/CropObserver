@@ -743,7 +743,7 @@ var LIBRARY_OBJECT = (function() {
                             }
                         },
                         title: {
-                            text: json_response.display_name + " values for " + crop_name + " in district " + district_name,
+                            text: "Drought percentile values for " + crop_name + " in district " + district_name,
                             style: {
                                 fontSize: '14px'
                             }
