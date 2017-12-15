@@ -114,3 +114,43 @@ th, td {
   height: 100%;
   border-radius: 0;
 }
+
+body {
+  padding: 2em;
+}
+
+table.table { width: 100%; }
+
+.table th, .table td {
+  text-align: left;
+  padding: 0.25em;
+}
+
+.table tr {
+  border-bottom: 1px solid #DDD;
+}
+button {
+  border-radius: 3px;
+  border: none;
+  margin: 0 0.25em;
+  transition: all 0.3s;
+}
+
+button:hover {
+  box-shadow: 0 0 4px rgba(3,3,3,0.8);
+  opacity: 0.9;
+}
+
+@media screen and (max-width: 800px) {
+  tr {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 0.5em 0;
+    border: 1px solid rgba(3,3,3,0.2);
+  }
+  td, th {
+    flex: 1 1 150px;
+    border: 0.5px solid rgba(3,3,3,0.2);
+  }
+}

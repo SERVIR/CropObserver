@@ -603,6 +603,9 @@ var LIBRARY_OBJECT = (function() {
         var json_path = crop + "/" + district_name + ".json";
         var info_html = "Crop and district shapefiles don't have correct info.";
 
+        $('#stats').empty();
+
+        $('#stats').append('<h5>Crop Season Statistics</h5><table class="table" id="table"></table>');
 
         $.ajax({
             url: '/apps/lis-crop-observer/crop-district-info/',
@@ -613,7 +616,7 @@ var LIBRARY_OBJECT = (function() {
 
             }, success: function (response) {
                 info_html = response.info_html;
-                $('#crop-district-info').html(info_html);
+                $('#table').html(info_html);
             }
         });
 
@@ -712,7 +715,8 @@ var LIBRARY_OBJECT = (function() {
         $('.warning').html('');
         var datastring = $get_ts.serialize();
         var var_list = $("#variable-select").val();
-        $('#seasons-statistic-info').empty();
+
+        $('.crop-stats').remove();
 
         $.ajax({
             type:"POST",
@@ -729,7 +733,14 @@ var LIBRARY_OBJECT = (function() {
                     var chart = $('#plotter').highcharts({
                         chart: {
                             type:'area',
-                            zoomType: 'x'
+                            zoomType: 'x',
+                        },
+                        plotOptions: {
+                            line: {
+                                marker: {
+                                    enabled: false
+                                }
+                            }
                         },
                         title: {
                             text: json_response.display_name + " values for " + crop_name + " in district " + district_name,
@@ -753,7 +764,6 @@ var LIBRARY_OBJECT = (function() {
                             title: {
                                 text: json_response.units
                             }
-
                         },
                         exporting: {
                             enabled: true
@@ -787,11 +797,10 @@ var LIBRARY_OBJECT = (function() {
                         ]
                     }).highcharts();
 
-                    $('#seasons-statistic-info').append("<h5>Crop Season Statistics</h5>");
-
                     var seasons = ["Planting", "Growing", "Harvesting"];
                     var json_path = crop_name + "/" + district_name + ".json";
-                    var season_months = []
+                    var season_months = [];
+                    var info_html = "";
 
                     $.ajax({
                         url: '/apps/lis-crop-observer/crop-district-info/',
@@ -801,6 +810,8 @@ var LIBRARY_OBJECT = (function() {
                         error: function (status) {
 
                         }, success: function (response) {
+                            $('#stats').append(response.crop_percentage);
+
                             for(var i = 0; i < seasons.length; ++i) {
                                 season_months[seasons[i]] = response.crop_seasons[seasons[i]];
                             }
@@ -808,15 +819,18 @@ var LIBRARY_OBJECT = (function() {
                             for(var i = 0; i < var_list.length; ++i) {
                                 var variable = var_list[i];
                                 var values = json_response.values[variable];
-                                $('#seasons-statistic-info').append("<h6>" + variable + "</h6>");
+                                info_html += '<tr class="crop-stats"><th>' + variable + "</th>";
 
                                 chart.addSeries({
                                     data: values,
-                                    name: variable
+                                    name: variable,
+                                    marker: {
+                                        enabled: false
+                                    }
                                 });
 
                                 for(var m = 0; m < seasons.length; ++m) {
-                                    $('#seasons-statistic-info').append(seasons[m] + ":<br>");
+                                    // $('#stats').append("<th>" + seasons[m]);
 
                                     var crop_season_vals = [];
                                     var months =  season_months[seasons[m]];
@@ -840,10 +854,12 @@ var LIBRARY_OBJECT = (function() {
                                     var min = Math.min.apply(null, crop_season_vals).toFixed(2);
                                     var std_dev = stdev(crop_season_vals).deviation;
 
-                                    $('#seasons-statistic-info').append("Mean = " + avg + "<br>Max = " + max + "<br>Min = "
-                                        + min + "<br>SD = " + std_dev + "<br><br>");
+                                    info_html += "<th>Mean = " + avg + "<br>Max = " + max + "<br>Min = "
+                                        + min + "<br>SD = " + std_dev + "</th>";
                                 }
+                                info_html += "</tr>";
                             }
+                            $('#table').append(info_html);
                         }
                     });
                 }
