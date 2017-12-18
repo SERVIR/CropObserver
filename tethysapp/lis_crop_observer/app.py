@@ -12,7 +12,7 @@ class LisCropObserver(TethysAppBase):
     root_url = 'lis-crop-observer'
     color = '#c0392b'
     description = 'View LIS Crop data for HKH region.'
-    tags = ''
+    tags = 'HKH'
     enable_feedback = False
     feedback_emails = []
 

@@ -5,14 +5,14 @@ from .model import add_new_shapefile
 from tethys_sdk.gizmos import *
 from django.http import JsonResponse, HttpResponse
 import json,shapely.geometry
-#from lis import *
+from lis import *
 from utilities import *
 
 
 LIS_DIRECTORY = "/home/dev/lis/"
 SHAPEFILES = "/home/dev/appsdev/tethysapp-lis_crop_observer/tethysapp/lis_crop_observer/workspaces/"
 
-@login_required()
+
 def home(request):
     """
     Controller for the app home page.
@@ -75,8 +75,6 @@ def home(request):
 
     return render(request, 'lis_crop_observer/home.html', context)
 
-
-@login_required()
 def get_ts(request):
 
     return_obj = {}
