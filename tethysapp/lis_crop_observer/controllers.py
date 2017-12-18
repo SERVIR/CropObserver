@@ -5,12 +5,12 @@ from .model import add_new_shapefile
 from tethys_sdk.gizmos import *
 from django.http import JsonResponse, HttpResponse
 import json,shapely.geometry
-from lis import *
+#from lis import *
 from utilities import *
 
 
-LIS_DIRECTORY = "/Users/TylorBayer/lis"
-SHAPEFILES = "/Users/TylorBayer/tethysdev/tethysapp-lis_crop_observer/tethysapp/lis_crop_observer/workspaces/"
+LIS_DIRECTORY = "/home/dev/lis/"
+SHAPEFILES = "/home/dev/appsdev/tethysapp-lis_crop_observer/tethysapp/lis_crop_observer/workspaces/"
 
 @login_required()
 def home(request):

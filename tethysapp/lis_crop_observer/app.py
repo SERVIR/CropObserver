@@ -5,13 +5,13 @@ class LisCropObserver(TethysAppBase):
     Tethys app class for Lis Crop Observer.
     """
 
-    name = 'Lis Crop Observer'
+    name = 'LIS Crop Observer'
     index = 'lis_crop_observer:home'
-    icon = 'lis_crop_observer/images/icon.gif'
+    icon = 'lis_crop_observer/images/logo.png'
     package = 'lis_crop_observer'
     root_url = 'lis-crop-observer'
     color = '#c0392b'
-    description = 'Place a brief description of your app here.'
+    description = 'View LIS Crop data for HKH region.'
     tags = ''
     enable_feedback = False
     feedback_emails = []

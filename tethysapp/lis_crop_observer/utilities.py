@@ -10,7 +10,7 @@ import geojson, ast
 from colour import Color
 import time as tim
 import uuid
-from .app import LisCropObserver as app
+#from .app import LisCropObserver as app
 
 
 def get_lis_variables(directory):
